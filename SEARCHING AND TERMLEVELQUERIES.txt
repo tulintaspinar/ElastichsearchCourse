@@ -1,0 +1,118 @@
+SEARCHING
+	* Structured Types : Yapılı veri bool/date/number/text(keyword) üzerinde yapılan aramalar.
+	* Unstructured Types : Yapısal olmayan veriler üzerinden arama yapmak. Bir skor değeri vardır.
+	
+	REST API
+	* Query DSL(Domain Spesific Language) : Parametreler requestin bodysinde gönderilir.
+	* Query Request : Query string ile parametreler gönderilir.
+	
+	Seacrh Context 
+	* Query Context : relevancy score
+	* Filter context = no relevancy score (skor değeri vermez, structured data üzerinde uygulanır.Data cachelenir.)
+
+	Term-Level Query 
+	* Structured Queries yapılar üzerinde etkilidir. Kesin ifadeler üzerinden arama yapılır. 
+	* ID, tarih üzerinden arama yamak gibi.
+	* Tam olarak eşleşen yapıları getirir.
+	* Analiz süreci yoktur. Büyük-küçük harf gibi uyuşmazlıklar olursa datayı getirmez.
+	* EXAMPLE
+		POST kibana_sample_data_ecommerce/_search
+		{
+			"query": {
+				"term": {
+					"customer_first_name.keyword": {
+						"value": "sonya",
+						"case_insensitive":true
+					}
+				}
+			}
+		}
+	* Terms query birden fazla valu ile arama yapmayı sağlar. Örneğin customer id'si 1,4,6 olanların listelenmesi
+	* ID ile arama yapısı farklıdır.
+		POST kibana_sample_data_ecommerce/_search
+		{
+			"query": {
+				"ids": {
+					"values": ["A6-fvJEBEz_eDBLBgEb0"]
+				}
+			}
+		}
+	
+	* EXIST ile arama
+		POST kibana_sample_data_ecommerce/_search
+		{
+			"query":{
+				"exists": {
+				"field": "email"
+				}
+			}
+		}
+
+	* PREFIX arama, keyword değeri üzerinde tam arama yapmaz, belli karakterler üzerinden yapar. Örneğin name'i Son ile başlayanlar.(StartWith)
+	* RANGE query, belli aralığa düşen dataları döndürür. 
+		gt : greater than (örn::25'den büyük olanları getir)
+		gte : greater than or equal (örn:25'den büyük ve eşit olanları getir)
+		lt : less than (örn:98'den küçük olanları getir)
+		lte : less than or euqal (örn:98'den küçük veya eşit olanları getir)
+	* Wildcard Query, Başlangıç değerini vererek arama yapılır.
+		-> * ile arama yapılırsa birden fazla karakter arar.
+		POST kibana_sample_data_ecommerce/_search
+		{
+			"query":{
+				"wildcard": {
+				"customer_full_name.keyword": "Rabbia Al *"
+				}
+			}
+		}
+		 -> ? ile arama yapılırsa tek karakter arar
+		POST kibana_sample_data_ecommerce/_search
+		{
+			"query":{
+				"wildcard": {
+				"customer_full_name.keyword": "Rabbia A? Perkins"
+				}
+			}
+		}
+	* Fuzzy query, yapılan aramada karakter hatalarını tolere eder ve harf hatasına karşılık gelen dataları getirir.
+
+	PAGINATION
+	* Elasticsearch default olarak maksimum 10 data döner.
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"size":20, 
+		"query":{
+			"wildcard": {
+			"customer_full_name.keyword": "Rabbia Al *"
+			}
+		}
+	}
+
+	* İstenilen kolonları listelemez
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"size": 5, 
+		"_source": {
+			"includes": ["customer_full_name","customer_phone"]
+		},
+		"query": {
+			"fuzzy": {
+				"currency": {
+					"value": "EU","fuzziness": 1
+				}
+			}
+		}
+	}
+
+	*SORT QUERY, gelen datanın sıralanmasını sağlar.
+		POST kibana_sample_data_ecommerce/_search
+		{
+			"size": 20, 
+			"query": {
+				"range": {
+				"taxless_total_price": {"gte": 10, "lte": 20}
+				}
+			},
+			"sort":[
+				{"taxless_total_price": {"order": "asc"}}
+			]
+		}

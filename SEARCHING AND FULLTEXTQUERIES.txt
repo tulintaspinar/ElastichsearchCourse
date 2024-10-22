@@ -1,0 +1,71 @@
+	* Full-text Queries
+	* Unstructured yapılar üzerinde etkilidir.
+
+	* MATCH QUERY
+	*Arama yaparken kelimenin tam ismi yazılmalı. Örneğin kayıt Wmone's diye yazılmış Women aratılırsa bulamaz.
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"query" : {
+			"match": {
+			"category": "shoes"
+			} 
+		}
+	}
+
+	* MATCH QUERY AND OPERATOR
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"query" : {
+			"match": {
+			"customer_full_name": {
+					"query": "Yahya Goodwin",
+					"operator": "and",
+					"fuzziness": 1
+				}
+			}
+		}
+	}
+
+	*Birçok field üzerinden arama yapma
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"query":{
+			"multi_match": {
+			"query": "Sultan",
+			"fields": ["customer_first_name","customer_full_name","customer_last_name"]
+			}
+		}
+	}
+
+	* MATCH PREFIX 
+	M ile içeren/başlayan veya tam olarak Sultan veya tam olarak Al içeren kayıtları getirir. Sıra önemli değil.
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"query" : {
+			"match_bool_prefix": {
+				"customer_full_name": "Sultan Al M"
+			}
+		}
+	}
+
+	* MATCH PHRASE
+	Öbek kelimelerin aranmasında kullanılır.Cümleyi girilen sırada arar.
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"query":{
+			"match_phrase": {
+				"customer_full_name": "Sultan Al Moran"
+			}
+		}
+	}
+
+	* MATCH PHRASE PREFIX
+	Sorgudaki value data içinde bulunmak zorunda 
+	POST kibana_sample_data_ecommerce/_search
+	{
+		"query":{
+			"match_phrase_prefix": {
+				"customer_full_name": "Sultan Al M"
+			}
+		}
+	}

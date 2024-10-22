@@ -1,0 +1,48 @@
+Elastichsearch'te birden fazla field üzerinde query yapılması.
+* Compound query (bool)
+    -> must : Şartı sağlayan datalar ve skora katkı sağlar.(Mutlaka olmalı)
+    -> filter : eşleşen döküman üzerinde gözükür ama skora katkı sağlamaz.(Mutlaka olmalı)
+    -> should : OR gibi davranır, eşleşen döküman üzerinde gözükür, skora katkı sağlar.
+    -> must_not : olması istenilmeyen kayıtlar için kullanılır. skora katkı sağlamaz.
+
+    POST kibana_sample_data_ecommerce/_search
+    {
+    "query":{
+        "bool":{
+        "must": [
+            {
+            "term": {
+                "geoip.city_name": {
+                "value": "New York"
+                }
+            }
+            }
+        ],
+        "must_not": [
+            {
+            "range": {
+                "taxful_total_price": {
+                "lte": 100
+                }
+            }
+            }
+        ],
+        "should": [
+            {
+            "term": {
+                "category.keyword": {
+                "value": "Women's Clothing"
+                }
+            }
+            }
+        ],
+        "filter": [
+            {
+            "term": {
+                "manufacturer.keyword": "Tigress Enterprises"
+            }
+            }
+        ]
+        }
+    }
+    }

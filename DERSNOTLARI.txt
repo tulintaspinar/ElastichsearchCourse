@@ -1,0 +1,100 @@
+docker wsl hatası verirse -> net start com.docker.service ardından wsl --list --verbose yazınca running yazmalı
+docker container ayağa kaldırma : docker-compose up
+docker container durdurma : docker-compose stop
+docker container silme : docker-compose down 
+
+elatich kibana üzerinde veri işlemleri için dev tools seçilir.
+
+[PUT] -> products/_doc/1 işlemi veritabanında 1 idli kayıt varsa gunceller yoksa kaydeder.
+[PUT] -> products/_create/1 işlemi veritabanına 1 id'li kaydı kaydeder.
+[POST] -> products/_doc işlemi kaydı veritabanına kaydeder.
+
+PUT products/_doc/1
+{
+	"name":"Iphone 14",
+	"rating":8.5,
+	"published":true,
+	"category":"mobile phones"
+}
+
+GET products/_doc/1
+
+
+PUT products/_settings
+{
+  "index":{"refresh_interval":"30s"}
+} -> 30s içinde veriyi alır.
+
+PUT products/_doc/20?refresh=wait_for 
+{
+  "name":"Samsung",
+  "rating":10,
+  "published":false,
+  "category":"Mobile Phone",
+  "price":{
+    "usd":3500,
+    "eur":3000
+  }
+} -> 30s sonra sorgulanabilir olur.
+
+POST products/_update/20
+{
+  "doc":{
+    "name": "Samsung 15",
+    "rating": 10,
+    "published": false,
+    "category": "Mobile Phone",
+    "price": {
+      "usd": 4000,
+      "eur": 3800
+    }
+  }
+}
+DELETE products/_doc/20
+
+HEAD products/_doc/1 -> data var mı yok mu onu kontrol eder.
+
+GET products/_mget
+{
+  "ids":["20","2"]
+} -> birden fazla datayı döner
+
+GET products/_search
+{
+  "query":{"match_all": {}}
+} -> tüm datayı döner (maks 20 adet)
+
+GET _mget
+{
+  "docs":[
+    {
+      "_index":"products",
+      "_id":1
+    },
+    {
+      "_index":"products",
+      "_id":20
+    }
+  ]
+}
+
+GET products/_source/1 -> datanın sadece source içeriğini getirir, metadata içeriğini getirmez.
+
+GET products/_doc/2?_source_includes=name,price -> sadece name ve price alanlarını listeler (_doc yerine _source da kullanılabilir.)
+GET products/_doc/2?_source_excludes=category,rating -> category ve rating alanlarını listelemez.
+
+COMPLEX AND RELATIONAL TYPES
+object
+nested
+flattened
+join
+
+STRUCTURED TYPES 
+geo_shape
+geo_point
+ip
+date_range
+ip_range
+
+
+

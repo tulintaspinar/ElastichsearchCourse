@@ -1,0 +1,79 @@
+ELASTICHSEARCH MAPPING PROCESS
+
+Explicit Mapping : Şema tiplerinin belirtilerek kaydedilmesi.
+
+PUT products
+{
+  "mappings": {
+    "properties": {
+      "name" : {"type": "text"},
+      "price":{"type": "long"},
+      "stock_no":{"type": "keyword"},
+      "warehouse":
+      {
+        "properties": {
+          "germany":{"type":"integer"},
+          "turkey":{"type":"integer"}
+        }
+      }
+      
+    }
+  }
+}
+
+Var olan kolon için ikincil tip eklenmesi
+PUT products/_mapping
+{
+  "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      }
+}
+
+RE-INDEXING
+GET products2/_mapping
+
+POST /_reindex
+{
+  "source":{
+    "index":"products"
+  },
+  "dest":{
+    "index":"products2"
+  }
+}
+
+PUT products2
+{
+  "mappings": {
+      "properties": {
+        "color": {
+          "type": "text"
+        },
+        "name": {
+          "type": "keyword"
+        },
+        "price": {
+          "type": "double"
+        },
+        "stock_no": {
+          "type": "keyword"
+        },
+        "warehouse": {
+          "properties": {
+            "germany": {
+              "type": "long"
+            },
+            "turkey": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
