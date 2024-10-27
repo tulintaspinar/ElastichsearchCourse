@@ -47,5 +47,21 @@ namespace Elastichsearch.API.Services
                 return ResponseDto<ProductDto>.Fail( "Ürün bulunamadı.", HttpStatusCode.NotFound);
             return ResponseDto<ProductDto>.Success(hasProduct.CreateDto(),HttpStatusCode.OK);
         }
+
+        public async Task<ResponseDto<bool>> UpdateAsync(ProductUpdateDto updateProduct)
+        {
+            var isSuccess = await _productRepository.UpdateAsync(updateProduct);
+            if (!isSuccess)
+                return ResponseDto<bool>.Fail("Kayıt güncelleme sırasında bir hata meydana geldi.", HttpStatusCode.InternalServerError);
+            return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
+        }
+
+        public async Task<ResponseDto<bool>> DeleteAsync(string id)
+        {
+            var isSuccess = await _productRepository.DeleteAsync(id);
+            if (!isSuccess)
+                return ResponseDto<bool>.Fail("Kayıt silinirken bir hata meydana geldi.", HttpStatusCode.InternalServerError);
+            return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
+        }
     }
 }
