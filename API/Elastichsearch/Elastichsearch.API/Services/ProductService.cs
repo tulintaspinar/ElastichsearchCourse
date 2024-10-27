@@ -1,6 +1,7 @@
 ﻿using Elastichsearch.API.DTOs;
 using Elastichsearch.API.Model;
 using Elastichsearch.API.Repositories;
+using Nest;
 using System.Collections.Immutable;
 using System.Net;
 
@@ -9,10 +10,11 @@ namespace Elastichsearch.API.Services
     public class ProductService
     {
         private readonly ProductRepository _productRepository;
-
-        public ProductService(ProductRepository productRepository)
+        private readonly ILogger<ProductService> _logger;
+        public ProductService(ProductRepository productRepository, ILogger<ProductService> logger)
         {
             _productRepository = productRepository;
+            _logger = logger;
         }
         public async Task<ResponseDto<ProductDto>> SaveAsync(ProductCreateDto request)
         {
@@ -46,6 +48,28 @@ namespace Elastichsearch.API.Services
             if (hasProduct == null)
                 return ResponseDto<ProductDto>.Fail( "Ürün bulunamadı.", HttpStatusCode.NotFound);
             return ResponseDto<ProductDto>.Success(hasProduct.CreateDto(),HttpStatusCode.OK);
+        }
+
+        public async Task<ResponseDto<bool>> UpdateAsync(ProductUpdateDto updateProduct)
+        {
+            var isSuccess = await _productRepository.UpdateAsync(updateProduct);
+            if (!isSuccess)
+                return ResponseDto<bool>.Fail("Kayıt güncelleme sırasında bir hata meydana geldi.", HttpStatusCode.InternalServerError);
+            return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
+        }
+
+        public async Task<ResponseDto<bool>> DeleteAsync(string id)
+        {
+            var deleteResponse = await _productRepository.DeleteAsync(id);
+            if(!deleteResponse.IsValid && deleteResponse.Result.Equals(Result.NotFound))
+                return ResponseDto<bool>.Fail("Silinmeye çalışılan ürün bulunamadı.", HttpStatusCode.NotFound);
+            if (!deleteResponse.IsValid)
+            {
+                _logger.LogError(deleteResponse.OriginalException,deleteResponse.ServerError.Error.ToString());
+                return ResponseDto<bool>.Fail("Kayıt silinirken bir hata meydana geldi.", HttpStatusCode.InternalServerError);
+            }
+                
+            return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
         }
     }
 }
