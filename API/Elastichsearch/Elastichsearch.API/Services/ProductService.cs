@@ -1,8 +1,6 @@
-﻿using Elastichsearch.API.DTOs;
-using Elastichsearch.API.Model;
+﻿using Elastic.Clients.Elasticsearch;
+using Elastichsearch.API.DTOs;
 using Elastichsearch.API.Repositories;
-using Nest;
-using System.Collections.Immutable;
 using System.Net;
 
 namespace Elastichsearch.API.Services
@@ -61,11 +59,12 @@ namespace Elastichsearch.API.Services
         public async Task<ResponseDto<bool>> DeleteAsync(string id)
         {
             var deleteResponse = await _productRepository.DeleteAsync(id);
-            if(!deleteResponse.IsValid && deleteResponse.Result.Equals(Result.NotFound))
+            if(!deleteResponse.IsValidResponse && deleteResponse.Result.Equals(Result.NotFound))
                 return ResponseDto<bool>.Fail("Silinmeye çalışılan ürün bulunamadı.", HttpStatusCode.NotFound);
-            if (!deleteResponse.IsValid)
+            if (!deleteResponse.IsValidResponse)
             {
-                _logger.LogError(deleteResponse.OriginalException,deleteResponse.ServerError.Error.ToString());
+                deleteResponse.TryGetOriginalException(out Exception? exception);
+                _logger.LogError(exception,deleteResponse.ElasticsearchServerError?.Error.ToString());
                 return ResponseDto<bool>.Fail("Kayıt silinirken bir hata meydana geldi.", HttpStatusCode.InternalServerError);
             }
                 

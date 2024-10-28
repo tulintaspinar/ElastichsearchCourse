@@ -1,5 +1,3 @@
-using Elasticsearch.Net;
-using Nest;
 using Elastichsearch.API.Extensions;
 using Elastichsearch.API.Services;
 using Elastichsearch.API.Repositories;
@@ -17,7 +15,7 @@ builder.Services.AddElastic(builder.Configuration);
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ProductRepository>();
-
+builder.Services.AddScoped<ECommerceRepository>();
 
 var app = builder.Build();
 
