@@ -18,15 +18,32 @@ namespace Elastichsearch.API.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> MatchAllQuery()
+        {
+            return Ok(await _repository.MatchAllQueryAsync());
+        }
+        [HttpGet]
         public async Task<IActionResult> TermQuery(string customerFirstName)
         {
-            return Ok(await _repository.TermLevelQuery(customerFirstName));
+            return Ok(await _repository.TermLevelQueryAsync(customerFirstName));
         }
 
         [HttpPost]
         public async Task<IActionResult> TermsQuery(List<string> customerFirstNameList)
         {
-            return Ok(await _repository.TermsQuery(customerFirstNameList));
+            return Ok(await _repository.TermsQueryAsync(customerFirstNameList));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PrefixQuery(string customerFullName)
+        {
+            return Ok(await _repository.PrefixQueryAsync(customerFullName));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RangeQuery(double FromPrice, double ToPrice)
+        {
+            return Ok(await _repository.RangeQueryAsync(FromPrice,ToPrice));
         }
     }
 }
