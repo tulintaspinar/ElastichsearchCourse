@@ -59,9 +59,9 @@ namespace Elastichsearch.API.Services
         public async Task<ResponseDto<bool>> DeleteAsync(string id)
         {
             var deleteResponse = await _productRepository.DeleteAsync(id);
-            if(!deleteResponse.IsSuccess() && deleteResponse.Result.Equals(Result.NotFound))
+            if(!deleteResponse.IsValidResponse && deleteResponse.Result.Equals(Result.NotFound))
                 return ResponseDto<bool>.Fail("Silinmeye çalışılan ürün bulunamadı.", HttpStatusCode.NotFound);
-            if (!deleteResponse.IsSuccess())
+            if (!deleteResponse.IsValidResponse)
             {
                 deleteResponse.TryGetOriginalException(out Exception? exception);
                 _logger.LogError(exception,deleteResponse.ElasticsearchServerError?.Error.ToString());

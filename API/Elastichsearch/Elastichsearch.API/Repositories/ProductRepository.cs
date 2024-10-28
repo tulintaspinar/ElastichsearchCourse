@@ -21,7 +21,7 @@ namespace Elastichsearch.API.Repositories
             newProduct.Created=DateTime.Now;
             var response = await _client.IndexAsync(newProduct, x => x.Index(_indexName).Id(Guid.NewGuid().ToString()));
             //fast fail
-            if (!response.IsSuccess())
+            if (!response.IsValidResponse)
                 return null;
             newProduct.Id = response.Id;
             return newProduct;
@@ -37,7 +37,7 @@ namespace Elastichsearch.API.Repositories
         public async Task<Product?> GetByIdAsync(string id)
         {
             var response = await _client.GetAsync<Product>(id, x => x.Index(_indexName));
-            if(!response.IsSuccess())
+            if(!response.IsValidResponse)
                 return null;
             response.Source.Id = response.Id;
             return response.Source;
@@ -46,7 +46,7 @@ namespace Elastichsearch.API.Repositories
         public async Task<bool> UpdateAsync(ProductUpdateDto updateProduct)
         {
             var response = await _client.UpdateAsync<Product, ProductUpdateDto>(_indexName,updateProduct.id, x => x.Doc(updateProduct));
-            return response.IsSuccess();
+            return response.IsValidResponse;
         }
         public async Task<DeleteResponse> DeleteAsync(string id)
         {
