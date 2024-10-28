@@ -83,6 +83,17 @@ namespace Elastichsearch.API.Repositories
             return result.Documents.ToImmutableList();
         }
 
+        public async Task<ImmutableList<ECommerce>> PaginationQueryAsync(int page=1, int pageSize=3)
+        {
+            var pageFrom = (page -1) * pageSize;
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Size(pageSize).From(pageFrom)
+            .Query(q => q.MatchAll(new MatchAllQuery())));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
         private static void GetId(SearchResponse<ECommerce> result)
         {
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
