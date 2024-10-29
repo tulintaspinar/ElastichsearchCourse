@@ -61,5 +61,10 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.FuzzyQueryAsync(customerName));
         }
+        [HttpGet]
+        public async Task<IActionResult> MatchQueryFullTextAsync(string categoryName)
+        {
+            return Ok(await _repository.MatchQueryFullTextAsync(categoryName));
+        }
     }
 }
