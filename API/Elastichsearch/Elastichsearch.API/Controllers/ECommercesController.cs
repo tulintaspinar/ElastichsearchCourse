@@ -22,6 +22,7 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.MatchAllQueryAsync());
         }
+
         [HttpGet]
         public async Task<IActionResult> TermQuery(string customerFirstName)
         {
@@ -39,11 +40,13 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.PrefixQueryAsync(customerFullName));
         }
+
         [HttpGet]
         public async Task<IActionResult> PaginationQuery(int page,int pageSize)
         {
             return Ok(await _repository.PaginationQueryAsync(page,pageSize));
         }
+
         [HttpGet]
         public async Task<IActionResult> WildCardQuery(string customerFullName)
         {
@@ -61,10 +64,23 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.FuzzyQueryAsync(customerName));
         }
+
         [HttpGet]
-        public async Task<IActionResult> MatchQueryFullTextAsync(string categoryName)
+        public async Task<IActionResult> MatchQueryFullText(string categoryName)
         {
             return Ok(await _repository.MatchQueryFullTextAsync(categoryName));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MatchBoolPrefixQueryFullText(string customerFullName)
+        {
+            return Ok(await _repository.MatchBoolPrefixQueryFullTextAsync(customerFullName));
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> MatchPhraseQueryFullText(string customerFullName)
+        {
+            return Ok(await _repository.MatchPhraseQueryFullTextAsync(customerFullName));
         }
     }
 }
