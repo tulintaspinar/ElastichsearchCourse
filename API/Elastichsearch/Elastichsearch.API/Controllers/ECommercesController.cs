@@ -22,6 +22,7 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.MatchAllQueryAsync());
         }
+
         [HttpGet]
         public async Task<IActionResult> TermQuery(string customerFirstName)
         {
@@ -40,10 +41,46 @@ namespace Elastichsearch.API.Controllers
             return Ok(await _repository.PrefixQueryAsync(customerFullName));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> PaginationQuery(int page,int pageSize)
+        {
+            return Ok(await _repository.PaginationQueryAsync(page,pageSize));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> WildCardQuery(string customerFullName)
+        {
+            return Ok(await _repository.WildCardQueryAsync(customerFullName));
+        }
+
         [HttpPost]
         public async Task<IActionResult> RangeQuery(double FromPrice, double ToPrice)
         {
             return Ok(await _repository.RangeQueryAsync(FromPrice,ToPrice));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FuzzyQuery(string customerName)
+        {
+            return Ok(await _repository.FuzzyQueryAsync(customerName));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MatchQueryFullText(string categoryName)
+        {
+            return Ok(await _repository.MatchQueryFullTextAsync(categoryName));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MatchBoolPrefixQueryFullText(string customerFullName)
+        {
+            return Ok(await _repository.MatchBoolPrefixQueryFullTextAsync(customerFullName));
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> MatchPhraseQueryFullText(string customerFullName)
+        {
+            return Ok(await _repository.MatchPhraseQueryFullTextAsync(customerFullName));
         }
     }
 }

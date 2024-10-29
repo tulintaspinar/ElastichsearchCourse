@@ -83,6 +83,59 @@ namespace Elastichsearch.API.Repositories
             return result.Documents.ToImmutableList();
         }
 
+        public async Task<ImmutableList<ECommerce>> PaginationQueryAsync(int page=1, int pageSize=3)
+        {
+            var pageFrom = (page -1) * pageSize;
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Size(pageSize).From(pageFrom)
+            .Query(q => q.MatchAll(new MatchAllQuery())));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> WildCardQueryAsync(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.Wildcard(w => w.Field(f => f.CustomerFullName.Suffix("keyword")).Wildcard(customerFullName))));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+        public async Task<ImmutableList<ECommerce>> FuzzyQueryAsync(string customerName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.Fuzzy(f => f.Field( f => f.CustomerFirstName.Suffix("keyword")).Value(customerName).Fuzziness(new Fuzziness(2))))
+            .Sort(sort=>sort.Field(f=>f.TaxFullTotalPrice,new FieldSort() { Order = SortOrder.Desc })));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> MatchQueryFullTextAsync(string categoryName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName).Query(q => q.Match(m => m.Field(f => f.Category).Query(categoryName))));
+            //var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName).Query(q => q.Match(m => m.Field(f => f.Category).Query(categoryName).Operator(Operator.And))));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+        public async Task<ImmutableList<ECommerce>> MatchBoolPrefixQueryFullTextAsync(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName).Query(q => q.MatchBoolPrefix(m => m.Field(f => f.CustomerFullName).Query(customerFullName))));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> MatchPhraseQueryFullTextAsync(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName).Query(q => q.MatchPhrase(m => m.Field(f => f.CustomerFullName).Query(customerFullName))));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
         private static void GetId(SearchResponse<ECommerce> result)
         {
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
