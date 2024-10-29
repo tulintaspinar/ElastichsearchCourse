@@ -150,11 +150,14 @@ namespace Elastichsearch.API.Repositories
 
         public async Task<ImmutableList<ECommerce>> CompoundQueryExmp2Async(string customerFullName)
         {
+            //var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            //.Query(q => q.Bool(b => b
+            //    .Should(m => m
+            //        .Match(m => m.Field(f => f.CustomerFullName).Query(customerFullName))
+            //        .Prefix(t => t.Field(f => f.CustomerFullName.Suffix("keyword")).Value(customerFullName))))));
+
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
-            .Query(q => q.Bool(b => b
-                .Should(m => m
-                    .Match(m => m.Field(f => f.CustomerFullName).Query(customerFullName))
-                    .Prefix(t => t.Field(f => f.CustomerFullName.Suffix("keyword")).Value(customerFullName))))));
+            .Query(q => q.MatchPhrasePrefix(m => m.Field(f =>f.CustomerFullName).Query(customerFullName))));
 
             GetId(result);
             return result.Documents.ToImmutableList();
