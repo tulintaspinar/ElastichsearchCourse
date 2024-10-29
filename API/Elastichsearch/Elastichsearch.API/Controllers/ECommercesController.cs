@@ -55,5 +55,11 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.RangeQueryAsync(FromPrice,ToPrice));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> FuzzyQuery(string customerName)
+        {
+            return Ok(await _repository.FuzzyQueryAsync(customerName));
+        }
     }
 }

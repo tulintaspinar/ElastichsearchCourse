@@ -102,6 +102,16 @@ namespace Elastichsearch.API.Repositories
             GetId(result);
             return result.Documents.ToImmutableList();
         }
+        public async Task<ImmutableList<ECommerce>> FuzzyQueryAsync(string customerName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.Fuzzy(f => f.Field( f => f.CustomerFirstName.Suffix("keyword")).Value(customerName).Fuzziness(new Fuzziness(2))))
+            .Sort(sort=>sort.Field(f=>f.TaxFullTotalPrice,new FieldSort() { Order = SortOrder.Desc })));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
         private static void GetId(SearchResponse<ECommerce> result)
         {
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
