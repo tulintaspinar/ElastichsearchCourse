@@ -82,5 +82,23 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.MatchPhraseQueryFullTextAsync(customerFullName));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CompoundQueryExmp1(string cityName, double taxFullTotalPrice, string categoryName)
+        {
+            return Ok(await _repository.CompoundQueryExmp1Async(cityName,taxFullTotalPrice,categoryName));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CompoundQueryExmp2(string customerFullName)
+        {
+            return Ok(await _repository.CompoundQueryExmp2Async(customerFullName));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MultiMatchQueryFullTextAsync(string name)
+        {
+            return Ok(await _repository.MultiMatchQueryFullTextAsync(name));
+        }
     }
 }

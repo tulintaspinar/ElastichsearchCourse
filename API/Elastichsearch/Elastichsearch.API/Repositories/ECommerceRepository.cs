@@ -135,7 +135,43 @@ namespace Elastichsearch.API.Repositories
             GetId(result);
             return result.Documents.ToImmutableList();
         }
+        public async Task<ImmutableList<ECommerce>> CompoundQueryExmp1Async(string cityName,double taxFullTotalPrice,string categoryName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q =>q.Bool(b => b
+                .Must(m => m.Term(t => t.Field("geoip.city_name"!).Value(cityName)))
+                .MustNot(mn => mn.Range(r => r.NumberRange(nr => nr.Field(f => f.TaxFullTotalPrice).Lte(taxFullTotalPrice))))
+                .Should(s => s.Term(t => t.Field(f => f.Category.Suffix("keyword")).Value(categoryName)))
+                .Filter(f => f.Term(t => t.Field("manufacturer.keyword"!).Value("Tigress Enterprises"))))));
 
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> CompoundQueryExmp2Async(string customerFullName)
+        {
+            //var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            //.Query(q => q.Bool(b => b
+            //    .Should(m => m
+            //        .Match(m => m.Field(f => f.CustomerFullName).Query(customerFullName))
+            //        .Prefix(t => t.Field(f => f.CustomerFullName.Suffix("keyword")).Value(customerFullName))))));
+
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.MatchPhrasePrefix(m => m.Field(f =>f.CustomerFullName).Query(customerFullName))));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> MultiMatchQueryFullTextAsync(string name)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.MultiMatch(mm => mm.Fields(new Field("customer_first_name")
+                .And(new Field("customer_last_name")).And(new Field("customer_full_name"))).Query(name))));
+            
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
         private static void GetId(SearchResponse<ECommerce> result)
         {
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
