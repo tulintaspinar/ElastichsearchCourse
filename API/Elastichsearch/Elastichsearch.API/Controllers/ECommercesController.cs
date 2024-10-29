@@ -94,5 +94,11 @@ namespace Elastichsearch.API.Controllers
         {
             return Ok(await _repository.CompoundQueryExmp2Async(customerFullName));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> MultiMatchQueryFullTextAsync(string name)
+        {
+            return Ok(await _repository.MultiMatchQueryFullTextAsync(name));
+        }
     }
 }

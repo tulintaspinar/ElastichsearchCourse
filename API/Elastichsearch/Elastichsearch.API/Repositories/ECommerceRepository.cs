@@ -162,6 +162,16 @@ namespace Elastichsearch.API.Repositories
             GetId(result);
             return result.Documents.ToImmutableList();
         }
+
+        public async Task<ImmutableList<ECommerce>> MultiMatchQueryFullTextAsync(string name)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.MultiMatch(mm => mm.Fields(new Field("customer_first_name")
+                .And(new Field("customer_last_name")).And(new Field("customer_full_name"))).Query(name))));
+            
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
         private static void GetId(SearchResponse<ECommerce> result)
         {
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
