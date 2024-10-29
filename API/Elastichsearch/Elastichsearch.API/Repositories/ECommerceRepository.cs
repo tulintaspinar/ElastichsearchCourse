@@ -94,6 +94,14 @@ namespace Elastichsearch.API.Repositories
             return result.Documents.ToImmutableList();
         }
 
+        public async Task<ImmutableList<ECommerce>> WildCardQueryAsync(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(_indexName)
+            .Query(q => q.Wildcard(w => w.Field(f => f.CustomerFullName.Suffix("keyword")).Wildcard(customerFullName))));
+
+            GetId(result);
+            return result.Documents.ToImmutableList();
+        }
         private static void GetId(SearchResponse<ECommerce> result)
         {
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
