@@ -1,8 +1,8 @@
-﻿using Elasticseacrh.Web.Models;
+﻿using Elasticsearch.WEB.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Elasticseacrh.Web.Controllers
+namespace Elasticsearch.WEB.Controllers
 {
     public class HomeController : Controller
     {
