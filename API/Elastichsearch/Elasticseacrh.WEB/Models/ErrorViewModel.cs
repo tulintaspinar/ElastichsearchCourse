@@ -1,4 +1,4 @@
-namespace Elasticseacrh.Web.Models
+﻿namespace Elasticsearch.WEB.Models
 {
     public class ErrorViewModel
     {
